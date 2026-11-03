@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudySync Pro - Ultimate Study Hub & Mini Games</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b0f19;
+            color: #f3f4f6;
+        }
+        .glass-card {
+            background: rgba(17, 24, 39, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-nav {
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f2937;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #374151;
+        }
+        canvas {
+            touch-action: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-40 glass-nav">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Brand Logo -->
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                        <i class="fa-solid font-bold text-white text-lg fa-graduation-cap"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-extrabold bg-gradient-to-r from-white via-slate-200 to-indigo-300 bg-clip-text text-transparent">StudySync Pro</span>
+                        <span class="hidden sm:inline-block text-xs text-indigo-400 ml-2 px-2 py-0.5 rounded-full bg-indigo-950/60 border border-indigo-800/50">Student Hub</span>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs (Desktop) -->
+                <nav class="hidden md:flex items-center space-x-1">
+                    <button onclick="switchTab('ai-search')" id="nav-ai-search" class="tab-btn px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 text-indigo-400 bg-indigo-950/60 border border-indigo-800/40">
+                        <i class="fa-brands fa-youtube mr-1.5 text-red-500"></i> Search AI Assistant
+                    </button>
+                    <button onclick="switchTab('notes')" id="nav-notes" class="tab-btn px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-400 hover:text-white hover:bg-gray-800/50">
+                        <i class="fa-solid fa-note-sticky mr-1.5 text-amber-400"></i> Quick Notes
+                    </button>
+                    <button onclick="switchTab('targets')" id="nav-targets" class="tab-btn px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-400 hover:text-white hover:bg-gray-800/50">
+                        <i class="fa-solid fa-list-check mr-1.5 text-emerald-400"></i> Daily Targets
+                    </button>
+                    <button onclick="switchTab('routine')" id="nav-routine" class="tab-btn px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-400 hover:text-white hover:bg-gray-800/50">
+                        <i class="fa-solid fa-calendar-days mr-1.5 text-cyan-400"></i> Routine
+                    </button>
+                    <button onclick="switchTab('timer')" id="nav-timer" class="tab-btn px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-400 hover:text-white hover:bg-gray-800/50">
+                        <i class="fa-solid fa-stopwatch mr-1.5 text-purple-400"></i> Focus & Timer
+                    </button>
+                </nav>
+
+                <!-- Top Right Action: Games Hub Trigger -->
+                <div class="flex items-center gap-3">
+                    <button onclick="openGamesModal()" class="flex items-center gap-2 text-xs font-bold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-3.5 py-2 rounded-xl shadow-lg shadow-purple-600/30 transition transform hover:scale-105">
+                        <i class="fa-solid fa-gamepad text-yellow-300 text-sm"></i>
+                        <span>Games Hub</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Nav Tabs -->
+        <div class="md:hidden flex overflow-x-auto border-t border-gray-800 px-2 py-2 gap-1 no-scrollbar">
+            <button onclick="switchTab('ai-search')" id="mobile-nav-ai-search" class="tab-btn-mobile text-xs whitespace-nowrap px-3 py-1.5 rounded-lg font-medium text-indigo-400 bg-indigo-950/60 border border-indigo-800/40">
+                <i class="fa-brands fa-youtube text-red-500"></i> Search AI
+            </button>
+            <button onclick="switchTab('notes')" id="mobile-nav-notes" class="tab-btn-mobile text-xs whitespace-nowrap px-3 py-1.5 rounded-lg font-medium text-gray-400 hover:text-white">
+                <i class="fa-solid fa-note-sticky text-amber-400"></i> Quick Notes
+            </button>
+            <button onclick="switchTab('targets')" id="mobile-nav-targets" class="tab-btn-mobile text-xs whitespace-nowrap px-3 py-1.5 rounded-lg font-medium text-gray-400 hover:text-white">
+                <i class="fa-solid fa-list-check text-emerald-400"></i> Targets
+            </button>
+            <button onclick="switchTab('routine')" id="mobile-nav-routine" class="tab-btn-mobile text-xs whitespace-nowrap px-3 py-1.5 rounded-lg font-medium text-gray-400 hover:text-white">
+                <i class="fa-solid fa-calendar-days text-cyan-400"></i> Routine
+            </button>
+            <button onclick="switchTab('timer')" id="mobile-nav-timer" class="tab-btn-mobile text-xs whitespace-nowrap px-3 py-1.5 rounded-lg font-medium text-gray-400 hover:text-white">
+                <i class="fa-solid fa-stopwatch text-purple-400"></i> Focus
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Body -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+        <!-- TAB 1: SEARCH AI ASSISTANT -->
+        <section id="tab-ai-search" class="tab-content space-y-6">
+            <div class="glass-card rounded-2xl p-6 sm:p-8 shadow-xl border border-gray-800/80">
+                <div class="max-w-3xl mx-auto text-center space-y-4 mb-8">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-950/60 border border-red-800/50 text-red-400 text-xs font-semibold">
+                        <i class="fa-brands fa-youtube"></i> YouTube Study Assistant
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Search AI Assistant</h2>
+                    <p class="text-sm text-gray-400">Type any study doubt or topic below. Clicking search will directly redirect and open YouTube with targeted video explanations and lectures!</p>
+                </div>
+
+                <!-- Search Input Box -->
+                <div class="max-w-2xl mx-auto space-y-4">
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                            <i class="fa-solid fa-magnifying-glass text-lg"></i>
+                        </div>
+                        <input type="text" id="ai-search-topic-input" 
+                            placeholder="Type any topic (e.g., HTML Tags, Python OOP, Calculus Integration, Organic Chemistry)..."
+                            onkeypress="if(event.key === 'Enter') executeDirectYTSearch();"
+                            class="w-full pl-11 pr-36 py-4 bg-gray-950 rounded-2xl border border-gray-700/80 focus:ring-2 focus:ring-red-500 focus:border-red-500 text-white placeholder-gray-500 text-sm sm:text-base shadow-inner transition">
+                        
+                        <button onclick="executeDirectYTSearch()" 
+                            class="absolute right-2 top-2 bottom-2 px-5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white text-xs sm:text-sm font-bold rounded-xl shadow-lg shadow-red-600/30 transition flex items-center gap-2">
+                            <i class="fa-brands fa-youtube text-lg"></i> Search YouTube
+                        </button>
+                    </div>
+
+                    <!-- Popular Quick Topics -->
+                    <div class="pt-4">
+                        <span class="text-xs text-gray-400 font-semibold block mb-2.5">Popular Quick Topics:</span>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="quickSearchYT('HTML and CSS Full Tutorial')" class="px-3 py-1.5 bg-gray-900 hover:bg-gray-800 text-gray-300 text-xs rounded-xl border border-gray-800 transition">💻 HTML & CSS Tutorial</button>
+                            <button onclick="quickSearchYT('Python Object Oriented Programming')" class="px-3 py-1.5 bg-gray-900 hover:bg-gray-800 text-gray-300 text-xs rounded-xl border border-gray-800 transition">🐍 Python OOPs</button>
+                            <button onclick="quickSearchYT('Class 12 Calculus Integration One Shot')" class="px-3 py-1.5 bg-gray-900 hover:bg-gray-800 text-gray-300 text-xs rounded-xl border border-gray-800 transition">📐 Calculus Integration</button>
+                            <button onclick="quickSearchYT('Organic Chemistry Class 12')" class="px-3 py-1.5 bg-gray-900 hover:bg-gray-800 text-gray-300 text-xs rounded-xl border border-gray-800 transition">🧪 Organic Chemistry</button>
+                            <button onclick="quickSearchYT('Physics Electrostatics One Shot')" class="px-3 py-1.5 bg-gray-900 hover:bg-gray-800 text-gray-300 text-xs rounded-xl border border-gray-800 transition">⚡ Physics Electrostatics</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: QUICK NOTES & IMPORTANT POINTS -->
+        <section id="tab-notes" class="tab-content hidden space-y-6">
+            <div class="glass-card rounded-2xl p-6 border border-gray-800">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-note-sticky text-amber-400"></i> Quick Notes & Important Points
+                        </h2>
+                        <p class="text-xs text-gray-400 mt-1">Write down formulas, key takeaways, and quick exam points.</p>
+                    </div>
+                </div>
+
+                <!-- Add Note Form -->
+                <div class="bg-gray-950/80 p-4 rounded-xl border border-gray-800 space-y-3 mb-6">
+                    <input type="text" id="note-title-input" placeholder="Note Title (e.g. Newton's Third Law / Integration Rule)" class="w-full px-3.5 py-2.5 bg-gray-900 border border-gray-700/80 rounded-xl text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none focus:border-amber-500">
+                    <textarea id="note-content-input" rows="3" placeholder="Write your short note or important formulas here..." class="w-full px-3.5 py-2.5 bg-gray-900 border border-gray-700/80 rounded-xl text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none focus:border-amber-500"></textarea>
+                    
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
+                        <select id="note-category-input" class="w-full sm:w-auto px-3 py-2 bg-gray-900 border border-gray-700 rounded-xl text-xs text-gray-300">
+                            <option value="Important Point">⭐ Important Point</option>
+                            <option value="Short Notes">📝 Short Notes</option>
+                            <option value="Formula">📐 Formula</option>
+                        </select>
+                        <button onclick="addQuickNote()" class="w-full sm:w-auto px-5 py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-amber-600/20 transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-plus"></i> Save Note
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Saved Notes Grid -->
+                <div id="notes-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Dynamic Notes Loaded Here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: DAILY TARGETS MANAGER -->
+        <section id="tab-targets" class="tab-content hidden space-y-6">
+            
+            <!-- Targets Header & Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="glass-card rounded-2xl p-5 border border-gray-800 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-gray-400 font-medium">Total Targets</p>
+                        <h4 id="stat-total-targets" class="text-2xl font-bold text-white mt-1">0</h4>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-list-check"></i>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-5 border border-gray-800 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-gray-400 font-medium">Completed (🟢 Green)</p>
+                        <h4 id="stat-completed-targets" class="text-2xl font-bold text-emerald-400 mt-1">0</h4>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-5 border border-gray-800 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-gray-400 font-medium">In Progress (🟡 Yellow)</p>
+                        <h4 id="stat-progress-targets" class="text-2xl font-bold text-amber-400 mt-1">0</h4>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-spinner"></i>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-5 border border-gray-800 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-gray-400 font-medium">Not Started (🔴 Red)</p>
+                        <h4 id="stat-pending-targets" class="text-2xl font-bold text-rose-400 mt-1">0</h4>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-circle-xmark"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Overall Daily Completion Progress Bar -->
+            <div class="glass-card rounded-2xl p-5 border border-gray-800">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs font-semibold text-gray-300">Daily Target Completion Progress</span>
+                    <span id="target-progress-percent" class="text-xs font-bold text-indigo-400">0%</span>
+                </div>
+                <div class="w-full bg-gray-900 rounded-full h-3 overflow-hidden border border-gray-800">
+                    <div id="target-progress-bar" class="bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Add Target Form & Filter Toolbar -->
+            <div class="glass-card rounded-2xl p-5 border border-gray-800 space-y-4">
+                <div class="flex flex-col lg:flex-row gap-3">
+                    <input type="text" id="target-title-input" placeholder="Enter target title (e.g. Watch Physics Lecture, Solve 20 Numericals)..." 
+                        class="flex-1 px-4 py-2.5 bg-gray-950 border border-gray-700/80 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500">
+                    
+                    <select id="target-subject-input" class="px-3 py-2.5 bg-gray-950 border border-gray-700/80 rounded-xl text-sm text-gray-300 focus:outline-none focus:border-indigo-500">
+                        <option value="Physics">Physics</option>
+                        <option value="Chemistry">Chemistry</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="General">General Study</option>
+                    </select>
+
+                    <button onclick="addDailyTarget()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm rounded-xl transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Add Target
+                    </button>
+                </div>
+
+                <!-- Filter Row -->
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-gray-800/60">
+                    <div class="flex items-center gap-2 overflow-x-auto py-1">
+                        <span class="text-xs text-gray-400 font-medium mr-1">Filter:</span>
+                        <button onclick="filterTargets('all')" id="filter-all" class="px-3 py-1 bg-indigo-600 text-white text-xs rounded-lg transition">All</button>
+                        <button onclick="filterTargets('not-started')" id="filter-not-started" class="px-3 py-1 bg-gray-800 text-gray-300 text-xs rounded-lg hover:bg-gray-700 transition">🔴 Not Started</button>
+                        <button onclick="filterTargets('in-progress')" id="filter-in-progress" class="px-3 py-1 bg-gray-800 text-gray-300 text-xs rounded-lg hover:bg-gray-700 transition">🟡 In Progress</button>
+                        <button onclick="filterTargets('completed')" id="filter-completed" class="px-3 py-1 bg-gray-800 text-gray-300 text-xs rounded-lg hover:bg-gray-700 transition">🟢 Completed</button>
+                    </div>
+                    <button onclick="clearCompletedTargets()" class="text-xs text-rose-400 hover:text-rose-300 font-medium">
+                        <i class="fa-solid fa-trash-can mr-1"></i> Clear Completed
+                    </button>
+                </div>
+            </div>
+
+            <!-- Targets List -->
+            <div id="targets-list" class="space-y-3">
+                <!-- Dynamically populated targets -->
+            </div>
+        </section>
+
+        <!-- TAB 4: ROUTINE / TIMETABLE MANAGER -->
+        <section id="tab-routine" class="tab-content hidden space-y-6">
+            <div class="glass-card rounded-2xl p-6 border border-gray-800">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-calendar-days text-cyan-400"></i>
+                            Daily Routine & Timetable
+                        </h2>
+                        <p class="text-xs text-gray-400 mt-1">Organize your study schedule into clear structured slots.</p>
+                    </div>
+                    <button onclick="openRoutineModal()" class="px-4 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white text-xs sm:text-sm font-semibold rounded-xl transition flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Add Time Slot
+                    </button>
+                </div>
+
+                <!-- Routine Cards Grid -->
+                <div id="routine-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Dynamic Timetable Slots -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: FOCUS TIMER & STOPWATCH -->
+        <section id="tab-timer" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- Pomodoro Focus Timer Card -->
+                <div class="glass-card rounded-2xl p-6 border border-gray-800 flex flex-col items-center text-center space-y-6">
+                    <div class="w-full flex justify-between items-center border-b border-gray-800 pb-3">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-brain text-purple-400"></i> Pomodoro Focus Timer
+                        </h3>
+                        <span id="timer-mode-tag" class="text-xs px-2.5 py-1 rounded-full bg-purple-950 text-purple-400 border border-purple-800 font-semibold">Focus Work</span>
+                    </div>
+
+                    <!-- Timer Display Circle -->
+                    <div class="relative w-56 h-56 flex items-center justify-center rounded-full bg-slate-900 border-4 border-purple-500/30 shadow-2xl shadow-purple-950">
+                        <div class="text-center">
+                            <span id="timer-display" class="text-5xl font-black text-white tracking-wider font-mono">25:00</span>
+                            <span class="block text-xs text-gray-400 mt-1" id="timer-status-label">Ready to Focus</span>
+                        </div>
+                    </div>
+
+                    <!-- Preset Time Buttons -->
+                    <div class="flex gap-2">
+                        <button onclick="setPomodoroTime(25, 'Focus Work')" class="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs rounded-lg transition border border-gray-700">25m Work</button>
+                        <button onclick="setPomodoroTime(5, 'Short Break')" class="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs rounded-lg transition border border-gray-700">5m Break</button>
+                        <button onclick="setPomodoroTime(15, 'Long Break')" class="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs rounded-lg transition border border-gray-700">15m Break</button>
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="flex items-center gap-3">
+                        <button id="timer-start-btn" onclick="togglePomodoro()" class="px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-sm shadow-lg shadow-purple-600/30 transition flex items-center gap-2">
+                            <i class="fa-solid fa-play"></i> Start Timer
+                        </button>
+                        <button onclick="resetPomodoro()" class="px-4 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 font-medium rounded-xl text-sm transition">
+                            <i class="fa-solid fa-rotate-right"></i> Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stopwatch Card -->
+                <div class="glass-card rounded-2xl p-6 border border-gray-800 flex flex-col items-center text-center space-y-6">
+                    <div class="w-full flex justify-between items-center border-b border-gray-800 pb-3">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-stopwatch text-cyan-400"></i> Study Stopwatch & Laps
+                        </h3>
+                        <span class="text-xs text-gray-400">Active Study Session</span>
+                    </div>
+
+                    <!-- Stopwatch Display Circle -->
+                    <div class="relative w-56 h-56 flex items-center justify-center rounded-full bg-slate-900 border-4 border-cyan-500/30 shadow-2xl shadow-cyan-950">
+                        <div class="text-center">
+                            <span id="sw-display" class="text-4xl font-black text-white tracking-wider font-mono">00:00:00</span>
+                            <span class="block text-xs text-cyan-400 mt-1 font-semibold">Active Session</span>
+                        </div>
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="flex items-center gap-3">
+                        <button id="sw-start-btn" onclick="toggleStopwatch()" class="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl text-sm shadow-lg shadow-cyan-600/30 transition flex items-center gap-2">
+                            <i class="fa-solid fa-play"></i> Start
+                        </button>
+                        <button onclick="recordLap()" class="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-gray-200 font-medium rounded-xl text-sm transition">
+                            <i class="fa-solid fa-flag"></i> Lap
+                        </button>
+                        <button onclick="resetStopwatch()" class="px-4 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 font-medium rounded-xl text-sm transition">
+                            <i class="fa-solid fa-rotate-right"></i>
+                        </button>
+                    </div>
+
+                    <!-- Lap Times Container -->
+                    <div class="w-full max-h-32 overflow-y-auto bg-gray-950/80 rounded-xl p-3 border border-gray-800 text-left space-y-1">
+                        <span class="text-xs text-gray-500 font-semibold uppercase tracking-wider block mb-1">Recorded Laps:</span>
+                        <div id="sw-laps-container" class="space-y-1 text-xs text-gray-300">
+                            <p class="text-gray-600 italic">No laps recorded yet.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL: 5 PLAYABLE MINI GAMES HUB -->
+    <div id="games-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-6 hidden overflow-y-auto">
+        <div class="glass-card max-w-4xl w-full rounded-2xl p-4 sm:p-6 border border-gray-800 space-y-4 my-auto">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+                <div class="flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-purple-600/20 text-purple-400 flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-gamepad"></i>
+                    </span>
+                    <div>
+                        <h3 class="text-lg font-bold text-white">Study Break Games Hub</h3>
+                        <p class="text-xs text-gray-400">Play 5 fun mini-games to refresh your mind!</p>
+                    </div>
+                </div>
+                <button onclick="closeGamesModal()" class="text-gray-400 hover:text-white p-2">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Game Selector Tabs -->
+            <div class="flex overflow-x-auto gap-2 pb-2 border-b border-gray-800/80 no-scrollbar">
+                <button onclick="selectGame('ttt')" id="gtab-ttt" class="px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap bg-purple-600 text-white">
+                    ❌ Cross Zero (Tic-Tac-Toe)
+                </button>
+                <button onclick="selectGame('runner')" id="gtab-runner" class="px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap bg-gray-800 text-gray-400 hover:text-white">
+                    🏃 Endless Runner (Temple Run)
+                </button>
+                <button onclick="selectGame('shooter')" id="gtab-shooter" class="px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap bg-gray-800 text-gray-400 hover:text-white">
+                    🎯 Survival Shooter (Free Fire)
+                </button>
+                <button onclick="selectGame('memory')" id="gtab-memory" class="px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap bg-gray-800 text-gray-400 hover:text-white">
+                    🧠 Memory Match
+                </button>
+                <button onclick="selectGame('snake')" id="gtab-snake" class="px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap bg-gray-800 text-gray-400 hover:text-white">
+                    🐍 Snake Arcade
+                </button>
+            </div>
+
+            <!-- GAME 1: TIC TAC TOE -->
+            <div id="game-view-ttt" class="game-view text-center space-y-4 py-2">
+                <div class="flex items-center justify-between max-w-xs mx-auto">
+                    <span id="ttt-status" class="text-sm font-semibold text-purple-400">Player X's Turn</span>
+                    <button onclick="resetTTT()" class="text-xs px-3 py-1 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg">Reset</button>
+                </div>
+                <div id="ttt-board" class="grid grid-cols-3 gap-2 max-w-xs mx-auto aspect-square">
+                    <!-- 9 Board Tiles -->
+                </div>
+            </div>
+
+            <!-- GAME 2: ENDLESS RUNNER (TEMPLE RUN CANVAS) -->
+            <div id="game-view-runner" class="game-view hidden text-center space-y-3">
+                <div class="flex justify-between items-center text-xs text-gray-300">
+                    <span>Press <kbd class="px-1.5 py-0.5 bg-gray-800 rounded">SPACE</kbd> or Tap Screen to Jump!</span>
+                    <span id="runner-score" class="font-bold text-amber-400">Score: 0</span>
+                </div>
+                <div class="relative bg-slate-950 rounded-xl overflow-hidden border border-gray-800">
+                    <canvas id="runner-canvas" width="600" height="220" class="w-full h-auto block"></canvas>
+                </div>
+                <button onclick="startRunnerGame()" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold rounded-xl">
+                    Play / Restart Runner
+                </button>
+            </div>
+
+            <!-- GAME 3: SURVIVAL SHOOTER (FREE FIRE STYLE CANVAS) -->
+            <div id="game-view-shooter" class="game-view hidden text-center space-y-3">
+                <div class="flex justify-between items-center text-xs text-gray-300">
+                    <span>Click/Tap Canvas to Shoot Red Targets!</span>
+                    <span id="shooter-score" class="font-bold text-rose-400">Eliminations: 0</span>
+                </div>
+                <div class="relative bg-slate-950 rounded-xl overflow-hidden border border-gray-800">
+                    <canvas id="shooter-canvas" width="600" height="240" class="w-full h-auto block cursor-crosshair"></canvas>
+                </div>
+                <button onclick="startShooterGame()" class="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-xl">
+                    Play / Restart Shooter
+                </button>
+            </div>
+
+            <!-- GAME 4: MEMORY MATCH -->
+            <div id="game-view-memory" class="game-view hidden text-center space-y-3">
+                <div class="flex justify-between items-center max-w-sm mx-auto text-xs text-gray-300">
+                    <span>Match identical pairs!</span>
+                    <button onclick="initMemoryGame()" class="px-3 py-1 bg-gray-800 hover:bg-gray-700 text-gray-200 rounded-lg">Reset</button>
+                </div>
+                <div id="memory-grid" class="grid grid-cols-4 gap-2 max-w-sm mx-auto">
+                    <!-- Memory Cards -->
+                </div>
+            </div>
+
+            <!-- GAME 5: SNAKE ARCADE -->
+            <div id="game-view-snake" class="game-view hidden text-center space-y-3">
+                <div class="flex justify-between items-center text-xs text-gray-300">
+                    <span>Use Arrow Keys / Touch Buttons to navigate snake</span>
+                    <span id="snake-score" class="font-bold text-emerald-400">Score: 0</span>
+                </div>
+                <div class="relative bg-slate-950 rounded-xl overflow-hidden border border-gray-800 flex justify-center">
+                    <canvas id="snake-canvas" width="300" height="240" class="block"></canvas>
+                </div>
+                <!-- On screen arrow buttons for mobile -->
+                <div class="flex justify-center gap-2 pt-1 sm:hidden">
+                    <button onclick="changeSnakeDir('UP')" class="px-3 py-1 bg-gray-800 text-white text-xs rounded">⬆️</button>
+                    <button onclick="changeSnakeDir('DOWN')" class="px-3 py-1 bg-gray-800 text-white text-xs rounded">⬇️</button>
+                    <button onclick="changeSnakeDir('LEFT')" class="px-3 py-1 bg-gray-800 text-white text-xs rounded">⬅️</button>
+                    <button onclick="changeSnakeDir('RIGHT')" class="px-3 py-1 bg-gray-800 text-white text-xs rounded">➡️</button>
+                </div>
+                <button onclick="startSnakeGame()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl">
+                    Play / Restart Snake
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL: Routine Time Slot Modal -->
+    <div id="routine-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-card max-w-md w-full rounded-2xl p-6 border border-gray-800 space-y-4">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-clock text-cyan-400"></i> Add Routine Slot
+                </h3>
+                <button onclick="closeRoutineModal()" class="text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-medium text-gray-300 mb-1">Time Range</label>
+                    <input type="text" id="routine-time-input" placeholder="e.g. 07:00 AM - 09:00 AM" class="w-full px-3 py-2 bg-gray-950 border border-gray-700 rounded-xl text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-300 mb-1">Subject / Activity Name</label>
+                    <input type="text" id="routine-title-input" placeholder="e.g. Morning Mathematics Practice" class="w-full px-3 py-2 bg-gray-950 border border-gray-700 rounded-xl text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-300 mb-1">Tag / Type</label>
+                    <select id="routine-tag-input" class="w-full px-3 py-2 bg-gray-950 border border-gray-700 rounded-xl text-xs text-white">
+                        <option value="Study">📚 Self Study</option>
+                        <option value="Lecture">🎥 Video Lecture</option>
+                        <option value="Revision">🔄 Revision</option>
+                        <option value="Break">☕ Break / Meal</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="pt-3 border-t border-gray-800 flex justify-end gap-2">
+                <button onclick="closeRoutineModal()" class="px-4 py-2 bg-gray-800 text-xs text-gray-300 rounded-xl">Cancel</button>
+                <button onclick="saveRoutineSlot()" class="px-5 py-2 bg-cyan-600 hover:bg-cyan-500 text-xs font-bold text-white rounded-xl">Save Slot</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global App State
+        const state = {
+            activeTab: 'ai-search',
+            targets: JSON.parse(localStorage.getItem('study_targets')) || [
+                { id: '1', title: 'Watch Physics Electrostatics Video', subject: 'Physics', status: 'not-started' },
+                { id: '2', title: 'Solve 15 Organic Chemistry Questions', subject: 'Chemistry', status: 'in-progress' },
+                { id: '3', title: 'Revise Integration Formulas', subject: 'Mathematics', status: 'completed' }
+            ],
+            targetFilter: 'all',
+            notes: JSON.parse(localStorage.getItem('study_notes')) || [
+                { id: '1', title: "Ohm's Law Formula", content: "V = I * R (Voltage = Current x Resistance). Fundamental in electrical circuit analysis.", category: "Formula" },
+                { id: '2', title: 'Integration by Parts', content: "∫ u dv = uv - ∫ v du. Remember ILATE rule for choosing u.", category: "Important Point" }
+            ],
+            routine: JSON.parse(localStorage.getItem('study_routine')) || [
+                { id: '1', time: '07:00 AM - 09:00 AM', title: 'Maths Problem Solving', tag: 'Study' },
+                { id: '2', time: '10:00 AM - 12:00 PM', title: 'Physics Video Lecture', tag: 'Lecture' },
+                { id: '3', time: '03:00 PM - 05:00 PM', title: 'Chemistry Flashcards Revision', tag: 'Revision' }
+            ],
+            timer: {
+                minutes: 25,
+                seconds: 0,
+                isRunning: false,
+                interval: null,
+                mode: 'Focus Work'
+            },
+            stopwatch: {
+                elapsedSeconds: 0,
+                isRunning: false,
+                interval: null,
+                laps: []
+            }
+        };
+
+        // Window Load Initialization
+        window.onload = function() {
+            renderTargets();
+            renderNotes();
+            renderRoutine();
+            updateTimerDisplay();
+            updateStopwatchDisplay();
+            initTTT();
+        };
+
+        function switchTab(tabId) {
+            state.activeTab = tabId;
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            // Style nav buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-400 hover:text-white hover:bg-gray-800/50";
+            });
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            if (activeBtn) {
+                activeBtn.className = "tab-btn px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 text-indigo-400 bg-indigo-950/60 border border-indigo-800/40";
+            }
+        }
+
+        // --- SEARCH AI ASSISTANT (DIRECT YOUTUBE SEARCH) ---
+        function executeDirectYTSearch() {
+            const topic = document.getElementById('ai-search-topic-input').value.trim();
+            if (!topic) {
+                alert('Please enter a study topic or doubt to search on YouTube!');
+                return;
+            }
+            const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(topic)}`;
+            window.open(searchUrl, '_blank');
+        }
+
+        function quickSearchYT(topic) {
+            document.getElementById('ai-search-topic-input').value = topic;
+            executeDirectYTSearch();
+        }
+
+        // --- QUICK NOTES MANAGER ---
+        function renderNotes() {
+            const grid = document.getElementById('notes-grid');
+            grid.innerHTML = '';
+
+            if (state.notes.length === 0) {
+                grid.innerHTML = `<div class="col-span-full p-8 text-center text-xs text-gray-500 glass-card rounded-xl">No quick notes saved yet. Add key points or formulas above!</div>`;
+                return;
+            }
+
+            state.notes.forEach(note => {
+                const card = document.createElement('div');
+                card.className = "glass-card p-4 rounded-xl border border-gray-800 flex flex-col justify-between space-y-3 relative group";
+                
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-800/50">${note.category}</span>
+                            <button onclick="copyNoteText('${note.id}')" class="text-xs text-gray-500 hover:text-white transition">
+                                <i class="fa-solid fa-copy"></i>
+                            </button>
+                        </div>
+                        <h4 class="text-sm font-bold text-white">${note.title}</h4>
+                        <p class="text-xs text-gray-300 mt-1 whitespace-pre-line leading-relaxed">${note.content}</p>
+                    </div>
+                    <div class="flex justify-end pt-2 border-t border-gray-800/60">
+                        <button onclick="deleteNote('${note.id}')" class="text-xs text-rose-400 hover:text-rose-300 font-medium">
+                            <i class="fa-solid fa-trash mr-1"></i> Delete
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function addQuickNote() {
+            const title = document.getElementById('note-title-input').value.trim();
+            const content = document.getElementById('note-content-input').value.trim();
+            const category = document.getElementById('note-category-input').value;
+
+            if (!title || !content) {
+                alert('Please enter both note title and content.');
+                return;
+            }
+
+            state.notes.unshift({ id: Date.now().toString(), title, content, category });
+            localStorage.setItem('study_notes', JSON.stringify(state.notes));
+            renderNotes();
+
+            document.getElementById('note-title-input').value = '';
+            document.getElementById('note-content-input').value = '';
+        }
+
+        function copyNoteText(id) {
+            const note = state.notes.find(n => n.id === id);
+            if (!note) return;
+            const fullText = `${note.title}\n${note.content}`;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = fullText;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+            alert('Note copied to clipboard!');
+        }
+
+        function deleteNote(id) {
+            state.notes = state.notes.filter(n => n.id !== id);
+            localStorage.setItem('study_notes', JSON.stringify(state.notes));
+            renderNotes();
+        }
+
+        // --- DAILY TARGETS LOGIC ---
+        function renderTargets() {
+            const listContainer = document.getElementById('targets-list');
+            listContainer.innerHTML = '';
+
+            let filtered = state.targets;
+            if (state.targetFilter !== 'all') {
+                filtered = state.targets.filter(t => t.status === state.targetFilter);
+            }
+
+            const total = state.targets.length;
+            const completed = state.targets.filter(t => t.status === 'completed').length;
+            const inProgress = state.targets.filter(t => t.status === 'in-progress').length;
+            const notStarted = state.targets.filter(t => t.status === 'not-started').length;
+
+            document.getElementById('stat-total-targets').innerText = total;
+            document.getElementById('stat-completed-targets').innerText = completed;
+            document.getElementById('stat-progress-targets').innerText = inProgress;
+            document.getElementById('stat-pending-targets').innerText = notStarted;
+
+            const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+            document.getElementById('target-progress-percent').innerText = `${percentage}%`;
+            document.getElementById('target-progress-bar').style.width = `${percentage}%`;
+
+            if (filtered.length === 0) {
+                listContainer.innerHTML = `<div class="p-8 text-center text-xs text-gray-500 glass-card rounded-xl">No targets found in this category. Add a target to get started!</div>`;
+                return;
+            }
+
+            filtered.forEach(target => {
+                const card = document.createElement('div');
+                card.className = "glass-card p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-gray-800/80";
+
+                let statusBadge = '';
+                if(target.status === 'not-started') {
+                    statusBadge = `<span class="px-2.5 py-1 text-xs rounded-full bg-rose-950/80 text-rose-400 border border-rose-800/50 font-medium">🔴 Not Started</span>`;
+                } else if(target.status === 'in-progress') {
+                    statusBadge = `<span class="px-2.5 py-1 text-xs rounded-full bg-amber-950/80 text-amber-400 border border-amber-800/50 font-medium">🟡 In Progress</span>`;
+                } else {
+                    statusBadge = `<span class="px-2.5 py-1 text-xs rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-800/50 font-medium">🟢 Completed</span>`;
+                }
+
+                card.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs px-2.5 py-1 rounded-lg bg-indigo-950 text-indigo-400 font-semibold border border-indigo-800/40">${target.subject}</span>
+                        <h4 class="text-sm font-semibold text-gray-200 ${target.status === 'completed' ? 'line-through text-gray-500' : ''}">${target.title}</h4>
+                    </div>
+                    <div class="flex items-center gap-2 justify-between sm:justify-end">
+                        ${statusBadge}
+                        <select onchange="updateTargetStatus('${target.id}', this.value)" class="bg-gray-900 text-xs text-gray-300 px-2 py-1 rounded-lg border border-gray-700">
+                            <option value="not-started" ${target.status === 'not-started' ? 'selected' : ''}>Not Started</option>
+                            <option value="in-progress" ${target.status === 'in-progress' ? 'selected' : ''}>In Progress</option>
+                            <option value="completed" ${target.status === 'completed' ? 'selected' : ''}>Completed</option>
+                        </select>
+                        <button onclick="deleteTarget('${target.id}')" class="text-gray-500 hover:text-rose-400 p-1.5 transition">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                listContainer.appendChild(card);
+            });
+        }
+
+        function addDailyTarget() {
+            const titleInput = document.getElementById('target-title-input');
+            const subjectInput = document.getElementById('target-subject-input');
+
+            if (!titleInput.value.trim()) {
+                alert('Please enter a target description.');
+                return;
+            }
+
+            state.targets.unshift({
+                id: Date.now().toString(),
+                title: titleInput.value.trim(),
+                subject: subjectInput.value,
+                status: 'not-started'
+            });
+
+            localStorage.setItem('study_targets', JSON.stringify(state.targets));
+            titleInput.value = '';
+            renderTargets();
+        }
+
+        function updateTargetStatus(id, newStatus) {
+            const target = state.targets.find(t => t.id === id);
+            if (target) {
+                target.status = newStatus;
+                localStorage.setItem('study_targets', JSON.stringify(state.targets));
+                renderTargets();
+            }
+        }
+
+        function deleteTarget(id) {
+            state.targets = state.targets.filter(t => t.id !== id);
+            localStorage.setItem('study_targets', JSON.stringify(state.targets));
+            renderTargets();
+        }
+
+        function filterTargets(category) {
+            state.targetFilter = category;
+            renderTargets();
+        }
+
+        function clearCompletedTargets() {
+            state.targets = state.targets.filter(t => t.status !== 'completed');
+            localStorage.setItem('study_targets', JSON.stringify(state.targets));
+            renderTargets();
+        }
+
+        // --- ROUTINE / TIMETABLE LOGIC ---
+        function renderRoutine() {
+            const container = document.getElementById('routine-list');
+            container.innerHTML = '';
+
+            if (state.routine.length === 0) {
+                container.innerHTML = `<div class="col-span-full p-8 text-center text-xs text-gray-500 glass-card rounded-xl">No routine slots set up yet. Click "Add Time Slot" to start.</div>`;
+                return;
+            }
+
+            state.routine.forEach(slot => {
+                const card = document.createElement('div');
+                card.className = "glass-card p-4 rounded-xl border border-gray-800/80 space-y-2 relative group";
+                
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-cyan-400 flex items-center gap-1.5">
+                            <i class="fa-regular fa-clock"></i> ${slot.time}
+                        </span>
+                        <span class="text-xs px-2 py-0.5 rounded bg-gray-800 text-gray-300 font-medium">${slot.tag}</span>
+                    </div>
+                    <h4 class="text-sm font-semibold text-white">${slot.title}</h4>
+                    <button onclick="deleteRoutineSlot('${slot.id}')" class="absolute top-2 right-2 text-gray-600 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition p-1">
+                        <i class="fa-solid fa-xmark text-sm"></i>
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function openRoutineModal() { document.getElementById('routine-modal').classList.remove('hidden'); }
+        function closeRoutineModal() { document.getElementById('routine-modal').classList.add('hidden'); }
+
+        function saveRoutineSlot() {
+            const time = document.getElementById('routine-time-input').value.trim();
+            const title = document.getElementById('routine-title-input').value.trim();
+            const tag = document.getElementById('routine-tag-input').value;
+
+            if(!time || !title) {
+                alert('Please fill out time range and activity title!');
+                return;
+            }
+
+            state.routine.push({ id: Date.now().toString(), time, title, tag });
+            localStorage.setItem('study_routine', JSON.stringify(state.routine));
+            renderRoutine();
+            closeRoutineModal();
+            document.getElementById('routine-time-input').value = '';
+            document.getElementById('routine-title-input').value = '';
+        }
+
+        function deleteRoutineSlot(id) {
+            state.routine = state.routine.filter(r => r.id !== id);
+            localStorage.setItem('study_routine', JSON.stringify(state.routine));
+            renderRoutine();
+        }
+
+        // --- TIMER & STOPWATCH LOGIC ---
+        function updateTimerDisplay() {
+            const m = String(state.timer.minutes).padStart(2, '0');
+            const s = String(state.timer.seconds).padStart(2, '0');
+            document.getElementById('timer-display').innerText = `${m}:${s}`;
+        }
+
+        function setPomodoroTime(mins, modeLabel) {
+            state.timer.minutes = mins;
+            state.timer.seconds = 0;
+            state.timer.mode = modeLabel;
+            document.getElementById('timer-mode-tag').innerText = modeLabel;
+            if (state.timer.isRunning) togglePomodoro();
+            updateTimerDisplay();
+        }
+
+        function togglePomodoro() {
+            const btn = document.getElementById('timer-start-btn');
+            if (state.timer.isRunning) {
+                clearInterval(state.timer.interval);
+                state.timer.isRunning = false;
+                btn.innerHTML = `<i class="fa-solid fa-play"></i> Start Timer`;
+                document.getElementById('timer-status-label').innerText = "Paused";
+            } else {
+                state.timer.isRunning = true;
+                btn.innerHTML = `<i class="fa-solid fa-pause"></i> Pause`;
+                document.getElementById('timer-status-label').innerText = "Focus Session Active";
+
+                state.timer.interval = setInterval(() => {
+                    if (state.timer.seconds === 0) {
+                        if (state.timer.minutes === 0) {
+                            clearInterval(state.timer.interval);
+                            state.timer.isRunning = false;
+                            alert(`Focus timer completed!`);
+                            return;
+                        }
+                        state.timer.minutes--;
+                        state.timer.seconds = 59;
+                    } else {
+                        state.timer.seconds--;
+                    }
+                    updateTimerDisplay();
+                }, 1000);
+            }
+        }
+
+        function resetPomodoro() {
+            if (state.timer.isRunning) togglePomodoro();
+            state.timer.minutes = 25;
+            state.timer.seconds = 0;
+            updateTimerDisplay();
+            document.getElementById('timer-status-label').innerText = "Ready to Focus";
+        }
+
+        function updateStopwatchDisplay() {
+            const totalSecs = state.stopwatch.elapsedSeconds;
+            const hrs = Math.floor(totalSecs / 3600);
+            const mins = Math.floor((totalSecs % 3600) / 60);
+            const secs = totalSecs % 60;
+            const format = (val) => String(val).padStart(2, '0');
+            document.getElementById('sw-display').innerText = `${format(hrs)}:${format(mins)}:${format(secs)}`;
+        }
+
+        function toggleStopwatch() {
+            const btn = document.getElementById('sw-start-btn');
+            if (state.stopwatch.isRunning) {
+                clearInterval(state.stopwatch.interval);
+                state.stopwatch.isRunning = false;
+                btn.innerHTML = `<i class="fa-solid fa-play"></i> Start`;
+            } else {
+                state.stopwatch.isRunning = true;
+                btn.innerHTML = `<i class="fa-solid fa-pause"></i> Pause`;
+
+                state.stopwatch.interval = setInterval(() => {
+                    state.stopwatch.elapsedSeconds++;
+                    updateStopwatchDisplay();
+                }, 1000);
+            }
+        }
+
+        function recordLap() {
+            if (state.stopwatch.elapsedSeconds === 0) return;
+            const displayTime = document.getElementById('sw-display').innerText;
+            state.stopwatch.laps.unshift(displayTime);
+
+            const container = document.getElementById('sw-laps-container');
+            container.innerHTML = state.stopwatch.laps.map((lap, i) => `
+                <div class="flex justify-between border-b border-gray-800 pb-1">
+                    <span>Lap ${state.stopwatch.laps.length - i}</span>
+                    <font class="font-mono text-cyan-400">${lap}</font>
+                </div>
+            `).join('');
+        }
+
+        function resetStopwatch() {
+            if (state.stopwatch.isRunning) toggleStopwatch();
+            state.stopwatch.elapsedSeconds = 0;
+            state.stopwatch.laps = [];
+            updateStopwatchDisplay();
+            document.getElementById('sw-laps-container').innerHTML = `<p class="text-gray-600 italic">No laps recorded yet.</p>`;
+        }
+
+        // --- 5 MINI GAMES HUB LOGIC ---
+        function openGamesModal() {
+            document.getElementById('games-modal').classList.remove('hidden');
+        }
+
+        function closeGamesModal() {
+            document.getElementById('games-modal').classList.add('hidden');
+            stopRunnerGame();
+            stopShooterGame();
+            stopSnakeGame();
+        }
+
+        function selectGame(gameId) {
+            document.querySelectorAll('.game-view').forEach(v => v.classList.add('hidden'));
+            document.getElementById(`game-view-${gameId}`).classList.remove('hidden');
+
+            document.querySelectorAll('[id^="gtab-"]').forEach(btn => {
+                btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap bg-gray-800 text-gray-400 hover:text-white";
+            });
+            document.getElementById(`gtab-${gameId}`).className = "px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap bg-purple-600 text-white";
+
+            stopRunnerGame();
+            stopShooterGame();
+            stopSnakeGame();
+
+            if (gameId === 'runner') startRunnerGame();
+            if (gameId === 'shooter') startShooterGame();
+            if (gameId === 'memory') initMemoryGame();
+            if (gameId === 'snake') startSnakeGame();
+        }
+
+        // GAME 1: Tic-Tac-Toe (Cross Zero)
+        let tttBoard = Array(9).fill(null);
+        let tttTurn = 'X';
+        let tttActive = true;
+
+        function initTTT() {
+            const boardEl = document.getElementById('ttt-board');
+            if(!boardEl) return;
+            boardEl.innerHTML = '';
+            tttBoard = Array(9).fill(null);
+            tttTurn = 'X';
+            tttActive = true;
+            document.getElementById('ttt-status').innerText = "Player X's Turn";
+
+            for(let i=0; i<9; i++) {
+                const tile = document.createElement('button');
+                tile.className = "bg-gray-900 border border-gray-800 rounded-xl text-2xl font-black flex items-center justify-center text-white hover:bg-gray-800 transition";
+                tile.onclick = () => makeTTTMove(i);
+                tile.id = `ttt-tile-${i}`;
+                boardEl.appendChild(tile);
+            }
+        }
+
+        function makeTTTMove(idx) {
+            if(!tttActive || tttBoard[idx]) return;
+            tttBoard[idx] = tttTurn;
+            document.getElementById(`ttt-tile-${idx}`).innerText = tttTurn;
+            document.getElementById(`ttt-tile-${idx}`).classList.add(tttTurn === 'X' ? 'text-indigo-400' : 'text-rose-400');
+
+            if(checkTTTWin()) {
+                document.getElementById('ttt-status').innerText = `🎉 Player ${tttTurn} Wins!`;
+                tttActive = false;
+                return;
+            }
+
+            if(tttBoard.every(cell => cell !== null)) {
+                document.getElementById('ttt-status').innerText = "It's a Draw!";
+                tttActive = false;
+                return;
+            }
+
+            tttTurn = tttTurn === 'X' ? 'O' : 'X';
+            document.getElementById('ttt-status').innerText = `Player ${tttTurn}'s Turn`;
+        }
+
+        function checkTTTWin() {
+            const wins = [
+                [0,1,2],[3,4,5],[6,7,8],
+                [0,3,6],[1,4,7],[2,5,8],
+                [0,4,8],[2,4,6]
+            ];
+            return wins.some(w => tttBoard[w[0]] && tttBoard[w[0]] === tttBoard[w[1]] && tttBoard[w[0]] === tttBoard[w[2]]);
+        }
+        function resetTTT() { initTTT(); }
+
+        // GAME 2: Endless Runner (Temple Run Style Canvas)
+        let runnerLoop = null;
+        function startRunnerGame() {
+            stopRunnerGame();
+            const canvas = document.getElementById('runner-canvas');
+            const ctx = canvas.getContext('2d');
+            let score = 0;
+            let player = { x: 50, y: 160, w: 20, h: 30, vy: 0, jumping: false };
+            let obstacles = [];
+            let frame = 0;
+
+            function jump() {
+                if(!player.jumping) {
+                    player.vy = -10;
+                    player.jumping = true;
+                }
+            }
+
+            window.onkeydown = (e) => { if(e.code === 'Space') jump(); };
+            canvas.onclick = jump;
+
+            function update() {
+                frame++;
+                player.vy += 0.5; // gravity
+                player.y += player.vy;
+
+                if(player.y >= 160) {
+                    player.y = 160;
+                    player.vy = 0;
+                    player.jumping = false;
+                }
+
+                if(frame % 90 === 0) {
+                    obstacles.push({ x: canvas.width, w: 15, h: 25 });
+                }
+
+                obstacles.forEach(obs => obs.x -= 4);
+                obstacles = obstacles.filter(obs => obs.x > -20);
+
+                // Collision
+                for(let obs of obstacles) {
+                    if(player.x < obs.x + obs.w && player.x + player.w > obs.x && player.y < 160 + obs.h && player.y + player.h > 160) {
+                        alert(`Game Over! Final Runner Score: ${score}`);
+                        stopRunnerGame();
+                        return;
+                    }
+                }
+
+                score++;
+                document.getElementById('runner-score').innerText = `Score: ${score}`;
+
+                // Render
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(0,0,canvas.width,canvas.height);
+
+                // Ground
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(0, 190, canvas.width, 30);
+
+                // Player
+                ctx.fillStyle = '#fbbf24';
+                ctx.fillRect(player.x, player.y, player.w, player.h);
+
+                // Obstacles
+                ctx.fillStyle = '#f43f5e';
+                obstacles.forEach(obs => ctx.fillRect(obs.x, 190 - obs.h, obs.w, obs.h));
+
+                runnerLoop = requestAnimationFrame(update);
+            }
+            update();
+        }
+
+        function stopRunnerGame() {
+            if(runnerLoop) cancelAnimationFrame(runnerLoop);
+        }
+
+        // GAME 3: Survival Shooter (Free Fire Style Canvas)
+        let shooterLoop = null;
+        function startShooterGame() {
+            stopShooterGame();
+            const canvas = document.getElementById('shooter-canvas');
+            const ctx = canvas.getContext('2d');
+            let score = 0;
+            let targets = [];
+
+            canvas.onclick = (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const mx = (e.clientX - rect.left) * (canvas.width / rect.width);
+                const my = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+                targets.forEach((t, idx) => {
+                    const dist = Math.hypot(t.x - mx, t.y - my);
+                    if(dist < t.r) {
+                        targets.splice(idx, 1);
+                        score += 10;
+                        document.getElementById('shooter-score').innerText = `Eliminations: ${score}`;
+                    }
+                });
+            };
+
+            function update() {
+                if(Math.random() < 0.03 && targets.length < 6) {
+                    targets.push({
+                        x: Math.random() * (canvas.width - 40) + 20,
+                        y: Math.random() * (canvas.height - 40) + 20,
+                        r: 16
+                    });
+                }
+
+                ctx.fillStyle = '#020617';
+                ctx.fillRect(0,0,canvas.width,canvas.height);
+
+                targets.forEach(t => {
+                    ctx.beginPath();
+                    ctx.arc(t.x, t.y, t.r, 0, Math.PI * 2);
+                    ctx.fillStyle = '#ef4444';
+                    ctx.fill();
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.stroke();
+                });
+
+                shooterLoop = requestAnimationFrame(update);
+            }
+            update();
+        }
+
+        function stopShooterGame() {
+            if(shooterLoop) cancelAnimationFrame(shooterLoop);
+        }
+
+        // GAME 4: Memory Match
+        let memCards = [];
+        let flipped = [];
+        function initMemoryGame() {
+            const grid = document.getElementById('memory-grid');
+            grid.innerHTML = '';
+            const icons = ['📚', '🧪', '📐', '💻', '⚡', '🧠'];
+            const deck = [...icons, ...icons].sort(() => Math.random() - 0.5);
+
+            deck.forEach((emoji, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "h-16 bg-gray-900 border border-gray-800 rounded-xl text-2xl flex items-center justify-center";
+                btn.innerText = '❓';
+                btn.onclick = () => flipCard(btn, emoji);
+                grid.appendChild(btn);
+            });
+            flipped = [];
+        }
+
+        function flipCard(btn, emoji) {
+            if(flipped.length >= 2 || btn.innerText !== '❓') return;
+            btn.innerText = emoji;
+            flipped.push({ btn, emoji });
+
+            if(flipped.length === 2) {
+                if(flipped[0].emoji === flipped[1].emoji) {
+                    flipped = [];
+                } else {
+                    setTimeout(() => {
+                        flipped[0].btn.innerText = '❓';
+                        flipped[1].btn.innerText = '❓';
+                        flipped = [];
+                    }, 800);
+                }
+            }
+        }
+
+        // GAME 5: Snake Arcade Game
+        let snakeLoop = null;
+        let snakeDir = 'RIGHT';
+        function startSnakeGame() {
+            stopSnakeGame();
+            const canvas = document.getElementById('snake-canvas');
+            const ctx = canvas.getContext('2d');
+            let snake = [{x: 5, y: 5}];
+            let food = {x: 10, y: 10};
+            let score = 0;
+            snakeDir = 'RIGHT';
+
+            window.onkeydown = (e) => {
+                if(e.key === 'ArrowUp' && snakeDir !== 'DOWN') snakeDir = 'UP';
+                if(e.key === 'ArrowDown' && snakeDir !== 'UP') snakeDir = 'DOWN';
+                if(e.key === 'ArrowLeft' && snakeDir !== 'RIGHT') snakeDir = 'LEFT';
+                if(e.key === 'ArrowRight' && snakeDir !== 'LEFT') snakeDir = 'RIGHT';
+            };
+
+            function step() {
+                let head = {...snake[0]};
+                if(snakeDir === 'UP') head.y--;
+                if(snakeDir === 'DOWN') head.y++;
+                if(snakeDir === 'LEFT') head.x--;
+                if(snakeDir === 'RIGHT') head.x++;
+
+                // Game Over Wall Collision
+                if(head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 16) {
+                    alert(`Snake crashed! Final Score: ${score}`);
+                    stopSnakeGame();
+                    return;
+                }
+
+                snake.unshift(head);
+                if(head.x === food.x && head.y === food.y) {
+                    score += 10;
+                    document.getElementById('snake-score').innerText = `Score: ${score}`;
+                    food = { x: Math.floor(Math.random()*20), y: Math.floor(Math.random()*16) };
+                } else {
+                    snake.pop();
+                }
+
+                ctx.fillStyle = '#090d16';
+                ctx.fillRect(0,0,canvas.width,canvas.height);
+
+                ctx.fillStyle = '#10b981';
+                snake.forEach(s => ctx.fillRect(s.x*15, s.y*15, 13, 13));
+
+                ctx.fillStyle = '#f43f5e';
+                ctx.fillRect(food.x*15, food.y*15, 13, 13);
+            }
+
+            snakeLoop = setInterval(step, 150);
+        }
+
+        function changeSnakeDir(dir) { snakeDir = dir; }
+        function stopSnakeGame() { if(snakeLoop) clearInterval(snakeLoop); }
+    </script>
+</body>
+</html>
